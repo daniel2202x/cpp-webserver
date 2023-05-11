@@ -1,4 +1,10 @@
 {
+    "locale": "en",
+    "workbench.colorTheme": "Default Dark Modern",
+    "editor.formatOnSave": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.autofetch": true,
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",
