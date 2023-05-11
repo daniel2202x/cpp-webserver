@@ -7,9 +7,10 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+                "${fileDirname}/*.cpp",
                 "-o",
-                "${fileDirname}/../bin/${fileBasenameNoExtension}"
+                "${fileDirname}/../bin/${fileBasenameNoExtension}",
+                "-std=c++2a"
             ],
             "options": {
                 "cwd": "${fileDirname}"
