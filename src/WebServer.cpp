@@ -55,7 +55,7 @@ bool WebServer::AcceptNextRequest()
     return !failed;
 }
 
-std::optional<std::string> WebServer::OpenNextRequest()
+std::optional<Request> WebServer::OpenNextRequest()
 {
     char buffer[RESPONSE_BUFFER_SIZE] = {0};
     int bytesRead = recv(m_CurrentClientSocketID, buffer, RESPONSE_BUFFER_SIZE - 1, 0);
@@ -65,7 +65,7 @@ std::optional<std::string> WebServer::OpenNextRequest()
         return {};
     }
 
-    return std::string(buffer);
+    return Request(buffer);
 }
 
 void WebServer::CloseCurrentRequest(const std::string &response)
@@ -73,7 +73,7 @@ void WebServer::CloseCurrentRequest(const std::string &response)
     int bytesSent = send(m_CurrentClientSocketID, response.c_str(), response.length(), 0);
     if (bytesSent < 0)
     {
-        std::cerr << "Error reading request from client" << std::endl;
+        std::cerr << "Error sending response to client" << std::endl;
         return;
     }
 

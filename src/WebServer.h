@@ -4,6 +4,8 @@
 #include <string>
 #include <optional>
 
+#include "Request.h"
+
 constexpr int RESPONSE_BUFFER_SIZE = 1024;
 
 class WebServer
@@ -17,6 +19,6 @@ public:
     ~WebServer();
 
     bool AcceptNextRequest();
-    std::optional<std::string> OpenNextRequest();
+    std::optional<Request> OpenNextRequest();
     void CloseCurrentRequest(const std::string &response);
 };

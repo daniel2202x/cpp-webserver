@@ -23,10 +23,10 @@ int main(int argc, char **argv)
     {
         if (server.AcceptNextRequest())
         {
-            auto request = server.OpenNextRequest();
+            std::optional<Request> request = server.OpenNextRequest();
             if (request.has_value())
             {
-                std::cout << "Recieved request: " << request.value() << std::endl;
+                // std::cout << "Recieved request: " << request.value() << std::endl;
 
                 std::string response = R"(HTTP/1.1 200 OK
 Content-Type: text/plain
