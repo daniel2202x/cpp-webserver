@@ -36,12 +36,12 @@ Request::Request(const std::string &rawRequest)
         line = Utility::TrimString(line);
         if (line != "")
         {
-            std::size_t colonIndex = line.find(": ");
+            std::size_t colonIndex = line.find(":");
             if (colonIndex != std::string::npos)
             {
                 std::string headerName = line.substr(0, colonIndex);
-                std::string headerValue = line.substr(colonIndex + 2, line.size() - 1);
-                m_Headers[headerName] = headerValue;
+                std::string headerValue = line.substr(colonIndex + 1, line.size() - 1);
+                m_Headers[headerName] = Utility::TrimString(headerValue);
             }
             else
             {
@@ -62,5 +62,4 @@ Request::Request(const std::string &rawRequest)
         bodyStream << line << "\n";
     }
     m_Body = bodyStream.str();
-    std::cout << m_Body << std::endl;
 }

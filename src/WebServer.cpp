@@ -59,12 +59,21 @@ std::optional<Request> WebServer::AwaitNextRequest()
         return {};
     }
 
-    return Request(buffer);
+    Request request(buffer);
+    if (request.IsFaulty())
+    {
+        std::cerr << "Request is faulty, see output above" << std::endl;
+        CloseCurrentRequest(Response(400, "text/plain", "Request is faulty"));
+        return {};
+    }
+
+    return request;
 }
 
-void WebServer::CloseCurrentRequest(const std::string &response)
+void WebServer::CloseCurrentRequest(const Response &response)
 {
-    int bytesSent = send(m_CurrentClientSocketID, response.c_str(), response.length(), 0);
+    const std::string &rawResponse = response.GetRaw();
+    int bytesSent = send(m_CurrentClientSocketID, rawResponse.c_str(), rawResponse.length(), 0);
     if (bytesSent < 0)
     {
         std::cerr << "Error sending response to client" << std::endl;

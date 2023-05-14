@@ -1,10 +1,3 @@
-#include <iostream>
-#include <string>
-
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
 #include "WebServer.h"
 
 constexpr int DEFAULT_PORT = 1234;
@@ -24,13 +17,7 @@ int main(int argc, char **argv)
         std::optional<Request> request = server.AwaitNextRequest();
         if (request.has_value())
         {
-            // std::cout << "Recieved request: " << request.value() << std::endl;
-
-            std::string response = R"(HTTP/1.1 200 OK
-Content-Type: text/plain
-
-asdf)";
-
+            Response response(200, "text/plain", "asdf");
             server.CloseCurrentRequest(response);
         }
     }

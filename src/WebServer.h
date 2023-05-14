@@ -1,10 +1,10 @@
 #pragma once
 
 #include <utility>
-#include <string>
 #include <optional>
 
 #include "Request.h"
+#include "Response.h"
 
 constexpr int RESPONSE_BUFFER_SIZE = 1024;
 
@@ -15,7 +15,7 @@ public:
     ~WebServer();
 
     std::optional<Request> AwaitNextRequest();
-    void CloseCurrentRequest(const std::string &response);
+    void CloseCurrentRequest(const Response &response);
 
 private:
     int32_t m_ServerSocketID;
