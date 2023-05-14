@@ -40,23 +40,17 @@ WebServer::~WebServer()
     close(m_ServerSocketID);
 }
 
-bool WebServer::AcceptNextRequest()
+std::optional<Request> WebServer::AwaitNextRequest()
 {
     sockaddr_in clientAddress;
     socklen_t clientAddressSize = sizeof(clientAddress);
     m_CurrentClientSocketID = accept(m_ServerSocketID, (sockaddr *)&clientAddress, &clientAddressSize);
-
-    bool failed = m_CurrentClientSocketID < 0;
-    if (failed)
+    if (m_CurrentClientSocketID < 0)
     {
         std::cerr << "Error accepting client connection" << std::endl;
+        return {};
     }
 
-    return !failed;
-}
-
-std::optional<Request> WebServer::OpenNextRequest()
-{
     char buffer[RESPONSE_BUFFER_SIZE] = {0};
     int bytesRead = recv(m_CurrentClientSocketID, buffer, RESPONSE_BUFFER_SIZE - 1, 0);
     if (bytesRead < 0)

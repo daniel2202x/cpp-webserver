@@ -17,4 +17,16 @@ namespace Utility
 
         return tokens;
     }
+
+    inline std::string TrimString(const std::string &input)
+    {
+        std::size_t startPos = input.find_first_not_of(" \t\r\n");
+        if (startPos == std::string::npos)
+        {
+            return "";
+        }
+
+        std::size_t endPos = input.find_last_not_of(" \t\r\n");
+        return input.substr(startPos, endPos - startPos + 1);
+    }
 }

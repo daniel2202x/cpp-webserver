@@ -21,20 +21,17 @@ int main(int argc, char **argv)
 
     while (true)
     {
-        if (server.AcceptNextRequest())
+        std::optional<Request> request = server.AwaitNextRequest();
+        if (request.has_value())
         {
-            std::optional<Request> request = server.OpenNextRequest();
-            if (request.has_value())
-            {
-                // std::cout << "Recieved request: " << request.value() << std::endl;
+            // std::cout << "Recieved request: " << request.value() << std::endl;
 
-                std::string response = R"(HTTP/1.1 200 OK
+            std::string response = R"(HTTP/1.1 200 OK
 Content-Type: text/plain
 
 asdf)";
 
-                server.CloseCurrentRequest(response);
-            }
+            server.CloseCurrentRequest(response);
         }
     }
 
