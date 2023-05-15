@@ -6,6 +6,7 @@
 #include "Utility.h"
 
 Request::Request(const std::string &rawRequest)
+    : m_IsFaulty(false)
 {
     std::istringstream iss(rawRequest);
     std::string line;
@@ -28,7 +29,7 @@ Request::Request(const std::string &rawRequest)
 
     m_Method = data[0];
     m_Path = data[1];
-    m_Protocol = data[2];
+    // m_Protocol = data[2]; no need to store this because nobody cares about the protocol version
 
     bool hasParsedHeaders = false;
     while (!hasParsedHeaders && std::getline(iss, line))

@@ -10,12 +10,18 @@ public:
 
     inline bool IsFaulty() const { return m_IsFaulty; }
 
+    inline const std::string &GetMethod() const { return m_Method; }
+    inline const std::string &GetPath() const { return m_Path; }
+
+    inline const std::unordered_map<std::string, std::string> &GetHeaders() const { return m_Headers; }
+
+    inline const std::string &GetBody() const { return m_Body; }
+
 private:
-    bool m_IsFaulty = false;
+    bool m_IsFaulty;
 
     std::string m_Method;
     std::string m_Path;
-    std::string m_Protocol;
 
     std::unordered_map<std::string, std::string> m_Headers;
 

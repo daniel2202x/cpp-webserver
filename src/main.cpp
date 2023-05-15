@@ -1,4 +1,5 @@
 #include "WebServer.h"
+#include "Logic.h"
 
 constexpr int DEFAULT_PORT = 1234;
 
@@ -11,16 +12,8 @@ int main(int argc, char **argv)
     }
 
     WebServer server(port);
-
-    while (true)
-    {
-        std::optional<Request> request = server.AwaitNextRequest();
-        if (request.has_value())
-        {
-            Response response(200, "text/plain", "asdf");
-            server.CloseCurrentRequest(response);
-        }
-    }
+    server.Get("/", Logic::GetRooms);
+    server.Run();
 
     return 0;
 }
