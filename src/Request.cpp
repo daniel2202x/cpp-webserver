@@ -18,11 +18,12 @@ Request::Request(const std::string &rawRequest)
         return;
     }
 
+    // TODO
     std::vector<std::string> data = Utility::SplitString(line, ' ');
 
     if (data.size() != 3)
     {
-        std::cerr << "Invalid request line: " << line << std::endl;
+        std::cerr << "Invalid first request line: " << line << std::endl;
         m_IsFaulty = true;
         return;
     }
@@ -34,15 +35,19 @@ Request::Request(const std::string &rawRequest)
     bool hasParsedHeaders = false;
     while (!hasParsedHeaders && std::getline(iss, line))
     {
+        // TODO
         line = Utility::TrimString(line);
         if (line != "")
         {
             std::size_t colonIndex = line.find(":");
             if (colonIndex != std::string::npos)
             {
+                // TODO
                 std::string headerName = line.substr(0, colonIndex);
+                // TODO
                 std::string headerValue = line.substr(colonIndex + 1, line.size() - 1);
-                m_Headers[headerName] = Utility::TrimString(headerValue);
+                // TODO
+                m_Headers[Utility::ToLowerCase(headerName)] = Utility::TrimString(headerValue);
             }
             else
             {

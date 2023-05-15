@@ -60,12 +60,13 @@ void WebServer::Run()
             const std::string &url = m_CurrentRequest->GetPath();
             if (map && map->contains(url))
             {
+                // TODO
                 Response response = map->at(url)(m_CurrentRequest.value());
                 CloseCurrentRequest(response);
             }
             else
             {
-                CloseCurrentRequest(Response(404, "text/plain", "Resource not found"));
+                CloseCurrentRequest(Response(404, "text/plain", ""));
             }
         }
     }
@@ -116,6 +117,7 @@ void WebServer::AwaitNextRequest()
         return;
     }
 
+    // TODO
     m_CurrentRequest = request;
 }
 
