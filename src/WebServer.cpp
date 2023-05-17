@@ -57,8 +57,8 @@ void WebServer::Run()
             continue;
         }
 
-        char buffer[RESPONSE_BUFFER_SIZE] = {0};
-        ssize_t bytesRead = recv(clientSocketID, buffer, RESPONSE_BUFFER_SIZE - 1, 0);
+        char requestBuffer[RESPONSE_BUFFER_SIZE] = {0};
+        ssize_t bytesRead = recv(clientSocketID, requestBuffer, RESPONSE_BUFFER_SIZE - 1, 0);
         if (bytesRead < 0)
         {
             std::cerr << "Error reading request from client" << std::endl;
@@ -66,7 +66,7 @@ void WebServer::Run()
             continue;
         }
 
-        Request request(buffer);
+        Request request(requestBuffer);
         if (request.IsFaulty())
         {
             std::cerr << "Request is faulty, see output above" << std::endl;
@@ -123,17 +123,17 @@ void WebServer::Run()
         std::time_t currentTime = std::time(nullptr);
         std::tm *timeInfo = std::gmtime(&currentTime);
 
-        std::stringstream ss;
-        ss << "HTTP/1.1 " << response.StatusCode << " " << reason << "\r\n";
-        ss << "Content-Type: " << response.ContentType << "\r\n";
-        ss << "Content-Length: " << response.Body.size() << "\r\n";
-        ss << "Date: " << std::put_time(timeInfo, "%a, %d %b %Y %H:%M:%S GMT") << "\r\n";
-        ss << "Cache-Control: no-cache, no-store, max-age=0, must-revalidate\r\n";
-        ss << "X-Powered-By: d2x/1.0\r\n";
-        ss << "\r\n";
-        ss << response.Body;
+        std::stringstream responseStream;
+        responseStream << "HTTP/1.1 " << response.StatusCode << " " << reason << "\r\n";
+        responseStream << "Content-Type: " << response.ContentType << "\r\n";
+        responseStream << "Content-Length: " << response.Body.size() << "\r\n";
+        responseStream << "Date: " << std::put_time(timeInfo, "%a, %d %b %Y %H:%M:%S GMT") << "\r\n";
+        responseStream << "Cache-Control: no-cache, no-store, max-age=0, must-revalidate\r\n";
+        responseStream << "X-Powered-By: d2x/1.0\r\n";
+        responseStream << "\r\n";
+        responseStream << response.Body;
 
-        std::string rawResponse = ss.str();
+        std::string rawResponse = responseStream.str();
         ssize_t bytesSent = send(clientSocketID, rawResponse.c_str(), rawResponse.length(), 0);
         if (bytesSent < 0)
         {
