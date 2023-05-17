@@ -12,7 +12,9 @@ int main(int argc, char **argv)
     }
 
     WebServer server(port);
+
     server.Get("/", Logic::GetRooms);
+
     server.Run();
 
     return 0;

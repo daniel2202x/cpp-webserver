@@ -4,10 +4,10 @@
 #include <sstream>
 #include <vector>
 
-#define VALIDATE_POST_PUT_HEADERS(request)      \
-    if (!ValidatePostPutHeaders(request))       \
-    {                                           \
-        return Response(400, "text/plain", ""); \
+#define VALIDATE_POST_PUT_HEADERS(request)                                                            \
+    if (!ValidatePostPutHeaders(request))                                                             \
+    {                                                                                                 \
+        return {400, "text/plain", "No Accept header with the value of 'text/plain' was specified."}; \
     }
 
 static std::vector<std::string> s_Rooms;
@@ -23,27 +23,27 @@ bool ValidatePostPutHeaders(const Request &request)
         }
         else
         {
-            std::cerr << "Accept header doesn't contain 'text/plain' on request " << request.GetMethod() << " " << request.GetPath() << std::endl;
+            std::cerr << "Accept header doesn't contain 'text/plain' on request " << request.GetMethod() << " " << request.GetUrl() << std::endl;
         }
     }
     else
     {
-        std::cerr << "Accept header missing on request " << request.GetMethod() << " " << request.GetPath() << std::endl;
+        std::cerr << "Accept header missing on request " << request.GetMethod() << " " << request.GetUrl() << std::endl;
     }
 
     return false;
 }
 
-Response Logic::CreateRoom(const Request &request)
+WebServer::Response Logic::CreateRoom(const Request &request)
 {
     VALIDATE_POST_PUT_HEADERS(request)
 
     s_Rooms.emplace_back(request.GetBody());
 
-    return Response(201, "text/plain", "");
+    return {201, "text/plain", ""};
 }
 
-Response Logic::GetRooms(const Request &request)
+WebServer::Response Logic::GetRooms(const Request &request)
 {
-    return Response(200, "text/plain", "Room 1\nRoom 2");
+    return {200, "text/plain", "Room 1\nRoom 2"};
 }

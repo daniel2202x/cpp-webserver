@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Request.h"
-#include "Response.h"
+#include "WebServer.h"
 
 namespace Logic
 {
-    Response CreateRoom(const Request &request);
-    Response GetRooms(const Request &request);
+    WebServer::Response CreateRoom(const Request &request);
+    WebServer::Response GetRooms(const Request &request);
 };

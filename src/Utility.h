@@ -23,13 +23,13 @@ namespace Utility
 
     inline std::string TrimString(const std::string &input)
     {
-        std::size_t startPos = input.find_first_not_of(" \t\r\n");
+        size_t startPos = input.find_first_not_of(" \t\r\n");
         if (startPos == std::string::npos)
         {
             return "";
         }
 
-        std::size_t endPos = input.find_last_not_of(" \t\r\n");
+        size_t endPos = input.find_last_not_of(" \t\r\n");
         // TODO
         return input.substr(startPos, endPos - startPos + 1);
     }
@@ -38,6 +38,7 @@ namespace Utility
     {
         std::string result = input;
         std::transform(result.begin(), result.end(), result.begin(),
+                       // TODO
                        [](unsigned char c)
                        { return std::tolower(c); });
         // TODO

@@ -2,14 +2,9 @@
 
 #include <utility>
 #include <optional>
+#include <functional>
 
 #include "Request.h"
-#include "Response.h"
-
-constexpr int RESPONSE_BUFFER_SIZE = 1024;
-
-using Handler = Response (*)(const Request &);
-using HandlerMap = std::unordered_map<std::string, Handler>;
 
 class WebServer
 {
@@ -19,18 +14,22 @@ public:
 
     void Run();
 
-    void Get(const std::string &url, Handler handler);
-    void Post(const std::string &url, Handler handler);
-    void Put(const std::string &url, Handler handler);
+    struct Response
+    {
+        uint16_t StatusCode;
+        std::string ContentType;
+        std::string Body;
+    };
+
+    using Handler = std::function<Response(const Request &)>;
+    using HandlerMap = std::unordered_map<std::string, Handler>;
+
+    void Get(const std::string &url, WebServer::Handler handler);
+    void Post(const std::string &url, WebServer::Handler handler);
+    void Put(const std::string &url, WebServer::Handler handler);
 
 private:
-    void AwaitNextRequest();
-    void CloseCurrentRequest(const Response &response);
-
     int32_t m_ServerSocketID;
-    int32_t m_CurrentClientSocketID;
-
-    std::optional<Request> m_CurrentRequest;
 
     HandlerMap m_GetHandlers;
     HandlerMap m_PostHandlers;

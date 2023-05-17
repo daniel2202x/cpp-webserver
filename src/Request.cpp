@@ -29,7 +29,7 @@ Request::Request(const std::string &rawRequest)
     }
 
     m_Method = data[0];
-    m_Path = data[1];
+    m_Url = data[1];
     // m_Protocol = data[2]; no need to store this because nobody cares about the protocol version
 
     bool hasParsedHeaders = false;
@@ -39,7 +39,7 @@ Request::Request(const std::string &rawRequest)
         line = Utility::TrimString(line);
         if (line != "")
         {
-            std::size_t colonIndex = line.find(":");
+            size_t colonIndex = line.find(":");
             if (colonIndex != std::string::npos)
             {
                 // TODO
