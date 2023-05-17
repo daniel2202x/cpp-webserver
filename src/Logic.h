@@ -4,6 +4,6 @@
 
 namespace Logic
 {
-    WebServer::Response CreateRoom(const Request &request);
-    WebServer::Response GetRooms(const Request &request);
+    WebServer::Response CreateRoom(const WebServer::Headers &headers, const std::string &body);
+    WebServer::Response GetRooms(const WebServer::Headers &headers, const std::string &body);
 };

@@ -66,17 +66,53 @@ void WebServer::Run()
             continue;
         }
 
-        Request request(requestBuffer);
-        if (request.IsFaulty())
+        std::istringstream requestStream(requestBuffer);
+        std::string requestStreamLine;
+
+        // read the request title line
+        if (!std::getline(requestStream, requestStreamLine))
         {
-            std::cerr << "Request is faulty, see output above" << std::endl;
+            std::cerr << "Request must contain at least the request line" << std::endl;
             close(clientSocketID);
             continue;
         }
 
+        std::istringstream requestTitleStream(requestStreamLine);
+        std::string requestTitleStreamLine;
+        std::getline(requestTitleStream, requestTitleStreamLine, ' ');
+        std::string method = std::move(requestTitleStreamLine);
+        std::getline(requestTitleStream, requestTitleStreamLine, ' ');
+        std::string url = std::move(requestTitleStreamLine);
+
+        // read the request headers
+        Headers headers;
+        bool doneParsingHeaders = false;
+        while (!doneParsingHeaders && std::getline(requestStream, requestStreamLine))
+        {
+            size_t colonIndex = requestStreamLine.find(": ");
+            if (colonIndex != std::string::npos)
+            {
+                std::string headerName = requestStreamLine.substr(0, colonIndex);
+                std::transform(headerName.begin(), headerName.end(), headerName.begin(),
+                               [](uint8_t c)
+                               { return std::tolower(c); });
+                headers[headerName] = requestStreamLine.substr(colonIndex + 2, requestStreamLine.size() - headerName.size() - 3);
+            }
+            else
+            {
+                doneParsingHeaders = true;
+            }
+        }
+
+        // read the request body
+        std::stringstream bodyStream;
+        while (std::getline(requestStream, requestStreamLine))
+        {
+            bodyStream << requestStreamLine << "\n";
+        }
+        std::string body = bodyStream.str();
+
         const HandlerMap *map = nullptr;
-        const std::string &method = request.GetMethod();
-        const std::string &url = request.GetUrl();
 
         if (method == "GET")
             map = &m_GetHandlers;
@@ -92,7 +128,7 @@ void WebServer::Run()
             continue;
         }
 
-        Response response = map->at(url)(request);
+        Response response = map->at(url)(headers, body);
 
         const char *reason = "";
         switch (response.StatusCode)
@@ -137,7 +173,7 @@ void WebServer::Run()
         ssize_t bytesSent = send(clientSocketID, rawResponse.c_str(), rawResponse.length(), 0);
         if (bytesSent < 0)
         {
-            std::cerr << "Error sending response to client" << std::endl;
+            std::cerr << "Error sending response to client for request " << method << " " << url << std::endl;
             close(clientSocketID);
             continue;
         }

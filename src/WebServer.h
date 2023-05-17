@@ -4,8 +4,6 @@
 #include <optional>
 #include <functional>
 
-#include "Request.h"
-
 class WebServer
 {
 public:
@@ -21,7 +19,8 @@ public:
         std::string Body;
     };
 
-    using Handler = std::function<Response(const Request &)>;
+    using Headers = std::unordered_map<std::string, std::string>;
+    using Handler = std::function<Response(const Headers &, const std::string &)>;
     using HandlerMap = std::unordered_map<std::string, Handler>;
 
     void Get(const std::string &url, WebServer::Handler handler);

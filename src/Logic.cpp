@@ -12,38 +12,38 @@
 
 static std::vector<std::string> s_Rooms;
 
-bool ValidatePostPutHeaders(const Request &request)
+bool ValidatePostPutHeaders(const WebServer::Headers &headers)
 {
-    if (request.GetHeaders().contains("accept"))
+    if (headers.contains("accept"))
     {
-        const std::string &acceptHeader = request.GetHeaders().at("accept");
+        const std::string &acceptHeader = headers.at("accept");
         if (acceptHeader.find("text/plain") != std::string::npos || acceptHeader.find("*/*") != std::string::npos)
         {
             return true;
         }
         else
         {
-            std::cerr << "Accept header doesn't contain 'text/plain' on request " << request.GetMethod() << " " << request.GetUrl() << std::endl;
+            std::cerr << "Accept header doesn't contain 'text/plain'" << std::endl;
         }
     }
     else
     {
-        std::cerr << "Accept header missing on request " << request.GetMethod() << " " << request.GetUrl() << std::endl;
+        std::cerr << "Accept header missing" << std::endl;
     }
 
     return false;
 }
 
-WebServer::Response Logic::CreateRoom(const Request &request)
+WebServer::Response Logic::CreateRoom(const WebServer::Headers &headers, const std::string &body)
 {
-    VALIDATE_POST_PUT_HEADERS(request)
+    VALIDATE_POST_PUT_HEADERS(headers)
 
-    s_Rooms.emplace_back(request.GetBody());
+    s_Rooms.emplace_back(body);
 
     return {201, "text/plain", ""};
 }
 
-WebServer::Response Logic::GetRooms(const Request &request)
+WebServer::Response Logic::GetRooms(const WebServer::Headers &headers, const std::string &body)
 {
     return {200, "text/plain", "Room 1\nRoom 2"};
 }
