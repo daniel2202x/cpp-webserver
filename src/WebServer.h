@@ -7,7 +7,7 @@
 class WebServer
 {
 public:
-    WebServer(uint32_t port);
+    WebServer(uint16_t port);
     ~WebServer();
 
     void Run();

@@ -8,15 +8,27 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-constexpr uint32_t RESPONSE_BUFFER_SIZE = 1024;
+#define LOG_AND_EXIT(error)          \
+    std::cerr << error << std::endl; \
+    std::exit(1)
 
-WebServer::WebServer(uint32_t port)
+#define LOG_AND_CONTINUE(error)      \
+    std::cerr << error << std::endl; \
+    continue
+
+#define LOG_CLOSE_AND_CONTINUE(error) \
+    std::cerr << error << std::endl;  \
+    close(clientSocketID);            \
+    continue
+
+static constexpr uint32_t RESPONSE_BUFFER_SIZE = 1024;
+
+WebServer::WebServer(uint16_t port)
 {
     m_ServerSocketID = socket(AF_INET, SOCK_STREAM, 0);
     if (m_ServerSocketID < 0)
     {
-        std::cerr << "Error creating socket" << std::endl;
-        std::exit(1);
+        LOG_AND_EXIT("Error creating socket");
     }
 
     sockaddr_in serverAddress = {0};
@@ -26,14 +38,12 @@ WebServer::WebServer(uint32_t port)
 
     if (bind(m_ServerSocketID, (sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
     {
-        std::cerr << "Error binding socket" << std::endl;
-        std::exit(1);
+        LOG_AND_EXIT("Error binding socket");
     }
 
     if (listen(m_ServerSocketID, 5) < 0)
     {
-        std::cerr << "Error starting listener" << std::endl;
-        std::exit(1);
+        LOG_AND_EXIT("Error starting listener");
     }
 
     std::cout << "Server listening on port " << port << std::endl;
@@ -53,17 +63,14 @@ void WebServer::Run()
         int32_t clientSocketID = accept(m_ServerSocketID, (sockaddr *)&clientAddress, &clientAddressSize);
         if (clientSocketID < 0)
         {
-            std::cerr << "Error accepting client connection" << std::endl;
-            continue;
+            LOG_AND_CONTINUE("Error accepting client connection");
         }
 
         char requestBuffer[RESPONSE_BUFFER_SIZE] = {0};
         ssize_t bytesRead = recv(clientSocketID, requestBuffer, RESPONSE_BUFFER_SIZE - 1, 0);
         if (bytesRead < 0)
         {
-            std::cerr << "Error reading request from client" << std::endl;
-            close(clientSocketID);
-            continue;
+            LOG_CLOSE_AND_CONTINUE("Error reading request from client");
         }
 
         std::istringstream requestStream(requestBuffer);
@@ -72,9 +79,7 @@ void WebServer::Run()
         // read the request title line
         if (!std::getline(requestStream, requestStreamLine))
         {
-            std::cerr << "Request must contain at least the request line" << std::endl;
-            close(clientSocketID);
-            continue;
+            LOG_CLOSE_AND_CONTINUE("Request must contain at least the request line");
         }
 
         std::istringstream requestTitleStream(requestStreamLine);
@@ -123,9 +128,7 @@ void WebServer::Run()
 
         if (!map || !map->contains(url))
         {
-            std::cerr << "Request " << method << " " << url << " could not be mapped" << std::endl;
-            close(clientSocketID);
-            continue;
+            LOG_CLOSE_AND_CONTINUE("Request " << method << " " << url << " could not be mapped");
         }
 
         Response response = map->at(url)(headers, body);
@@ -173,9 +176,7 @@ void WebServer::Run()
         ssize_t bytesSent = send(clientSocketID, rawResponse.c_str(), rawResponse.length(), 0);
         if (bytesSent < 0)
         {
-            std::cerr << "Error sending response to client for request " << method << " " << url << std::endl;
-            close(clientSocketID);
-            continue;
+            LOG_CLOSE_AND_CONTINUE("Error sending response to client for request " << method << " " << url);
         }
 
         close(clientSocketID);

@@ -1,7 +1,7 @@
 #include "WebServer.h"
 #include "Logic.h"
 
-constexpr int DEFAULT_PORT = 1234;
+static constexpr uint16_t DEFAULT_PORT = 1234;
 
 int main(int argc, char **argv)
 {
@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
     WebServer server(port);
 
-    server.Get("/", Logic::GetRooms);
+    server.Get("/rooms", Logic::GetRooms);
 
     server.Run();
 
