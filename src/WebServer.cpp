@@ -83,11 +83,11 @@ void WebServer::Run()
         }
 
         std::istringstream requestTitleStream(requestStreamLine);
-        std::string requestTitleStreamLine;
+        nocpy::string requestTitleStreamLine;
         std::getline(requestTitleStream, requestTitleStreamLine, ' ');
-        std::string method = std::move(requestTitleStreamLine);
+        nocpy::string method = std::move(requestTitleStreamLine);
         std::getline(requestTitleStream, requestTitleStreamLine, ' ');
-        std::string url = std::move(requestTitleStreamLine);
+        nocpy::string url = std::move(requestTitleStreamLine);
 
         // read the request headers
         Headers headers;
